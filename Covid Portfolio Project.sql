@@ -362,6 +362,22 @@ FROM
 
 
 -- We Take These Out As They Are Not Included In The Above Quesries And Want To Stay Consistent  
+-- Table 1 Tableau
+SELECT 
+	--date, 
+	SUM(new_cases) AS TotalNewCases,
+	SUM(new_deaths) AS TotalNewDeaths,
+	SUM(new_deaths) / NULLIF(SUM(new_cases), 0) * 100 AS NewDeathPercentage
+FROM 
+	PortfolioProject.dbo.CovidDeath
+WHERE 
+	continent IS NOT NULL
+	--location = 'Iran'
+--GROUP BY 
+	--date
+ORDER BY 
+	1,2;
+
 -- Table 2 For Tableau
 SELECT 
 	location, 
@@ -387,9 +403,25 @@ SELECT
 FROM
 	PortfolioProject..CovidDeath
 GROUP BY 
-	location, population
+	location, 
+	population
 ORDER BY 
 	PercentagePopulationInfected DESC
 
 
 -- Table 4 Tableau
+SELECT
+	location, 
+	population,
+	date,
+	COALESCE(MAX(total_cases), 0) AS 'HighestInfectionCount', 
+	COALESCE(MAX(total_cases / population) * 100, 0) AS 'PercentagePopulationInfected'
+	 
+FROM
+	PortfolioProject..CovidDeath
+GROUP BY 
+	location, 
+	population,
+	date
+ORDER BY 
+	PercentagePopulationInfected DESC
