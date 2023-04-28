@@ -162,6 +162,7 @@ ORDER BY
 
 
 -- GLOBAL NUMBERS
+-- Table 1 Tableau
 SELECT 
 	--date, 
 	SUM(new_cases) AS TotalNewCases,
@@ -176,37 +177,6 @@ WHERE
 	--date
 ORDER BY 
 	1,2;
-
-
-
--- We Take These Out As They Are Not Included In The Above Quesries And Want To Stay Consistent  
-SELECT 
-	location, 
-	SUM(CAST(new_deaths AS int)) AS TotalDeathCount
-
-FROM 
-	PortfolioProject..CovidDeath
-WHERE 
-	continent IS NULL AND
-	location NOT IN ( 'World', 'European Union', 'International')
-GROUP BY 
-	location
-ORDER BY
-	TotalDeathCount DESC
-
--- Table 2 For Tableau
-SELECT
-	location, 
-	population, 
-	MAX(total_cases) AS HighestInfectionCount, 
-	MAX(total_cases / population) * 100 AS PercentagePopulationInfected
-FROM
-	PortfolioProject..CovidDeath
-GROUP BY 
-	location, population
-ORDER BY 
-	PercentagePopulationInfected DESC
-
 
 
 
@@ -384,3 +354,42 @@ SELECT
 	*
 FROM
 	PercentPopulationVaccinated;
+
+
+
+
+
+
+
+-- We Take These Out As They Are Not Included In The Above Quesries And Want To Stay Consistent  
+-- Table 2 For Tableau
+SELECT 
+	location, 
+	SUM(CAST(new_deaths AS int)) AS TotalDeathCount
+
+FROM 
+	PortfolioProject..CovidDeath
+WHERE 
+	continent IS NULL AND
+	location NOT IN ( 'World', 'European Union', 'International')
+GROUP BY 
+	location
+ORDER BY
+	TotalDeathCount DESC
+
+-- Table 3 For Tableau
+SELECT
+	location, 
+	population, 
+	COALESCE(MAX(total_cases), 0) AS 'HighestInfectionCount', 
+	COALESCE(MAX(total_cases / population) * 100, 0) AS 'PercentagePopulationInfected'
+	 
+FROM
+	PortfolioProject..CovidDeath
+GROUP BY 
+	location, population
+ORDER BY 
+	PercentagePopulationInfected DESC
+
+
+-- Table 4 Tableau
