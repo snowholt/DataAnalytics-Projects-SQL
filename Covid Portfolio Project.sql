@@ -359,7 +359,7 @@ FROM
 
 
 
-
+-- Tableau Tables - This results will be used for creating dashboard in Tableau! Updated Dataset (2023-04-28)
 
 -- We Take These Out As They Are Not Included In The Above Quesries And Want To Stay Consistent  
 -- Table 1 Tableau
@@ -369,7 +369,7 @@ SELECT
 	SUM(new_deaths) AS TotalNewDeaths,
 	SUM(new_deaths) / NULLIF(SUM(new_cases), 0) * 100 AS NewDeathPercentage
 FROM 
-	PortfolioProject.dbo.CovidDeath
+	PortfolioProject.dbo.CovidData
 WHERE 
 	continent IS NOT NULL
 	--location = 'Iran'
@@ -378,13 +378,15 @@ WHERE
 ORDER BY 
 	1,2;
 
+
+
 -- Table 2 For Tableau
 SELECT 
 	location, 
 	SUM(CAST(new_deaths AS int)) AS TotalDeathCount
 
 FROM 
-	PortfolioProject..CovidDeath
+	PortfolioProject..CovidData
 WHERE 
 	continent IS NULL AND
 	location NOT IN ( 'World', 'European Union', 'International')
@@ -392,6 +394,9 @@ GROUP BY
 	location
 ORDER BY
 	TotalDeathCount DESC
+
+
+
 
 -- Table 3 For Tableau
 SELECT
@@ -401,12 +406,14 @@ SELECT
 	COALESCE(MAX(total_cases / population) * 100, 0) AS 'PercentagePopulationInfected'
 	 
 FROM
-	PortfolioProject..CovidDeath
+	PortfolioProject..CovidData
 GROUP BY 
 	location, 
 	population
 ORDER BY 
 	PercentagePopulationInfected DESC
+
+
 
 
 -- Table 4 Tableau
@@ -418,10 +425,34 @@ SELECT
 	COALESCE(MAX(total_cases / population) * 100, 0) AS 'PercentagePopulationInfected'
 	 
 FROM
-	PortfolioProject..CovidDeath
+	PortfolioProject..CovidData
 GROUP BY 
 	location, 
 	population,
 	date
 ORDER BY 
 	PercentagePopulationInfected DESC
+
+
+
+
+-- Table 5 Tableau
+SELECT
+	location, 
+	population,
+	date,
+	COALESCE(new_cases, 0) AS 'NewInfectionCount',
+	COALESCE(new_deaths, 0) AS 'NewDeathCount'
+FROM
+	PortfolioProject..CovidData
+GROUP BY 
+	location, 
+	population,
+	date
+ORDER BY 
+	PercentagePopulationInfected DESC
+
+
+
+
+
