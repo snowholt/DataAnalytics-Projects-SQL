@@ -393,7 +393,7 @@ WHERE
 GROUP BY 
 	location
 ORDER BY
-	TotalDeathCount DESC
+	TotalDeathCount DESC;
 
 
 
@@ -411,7 +411,7 @@ GROUP BY
 	location, 
 	population
 ORDER BY 
-	PercentagePopulationInfected DESC
+	PercentagePopulationInfected DESC;
 
 
 
@@ -431,7 +431,7 @@ GROUP BY
 	population,
 	date
 ORDER BY 
-	PercentagePopulationInfected DESC
+	PercentagePopulationInfected DESC;
 
 
 
@@ -445,14 +445,83 @@ SELECT
 	COALESCE(new_deaths, 0) AS 'NewDeathCount'
 FROM
 	PortfolioProject..CovidData
+WHERE 
+	continent IS NULL AND
+	location NOT IN ( 'World', 'European Union', 'International')
 GROUP BY 
 	location, 
 	population,
-	date
+	date,
+	new_cases,
+	new_deaths
 ORDER BY 
-	PercentagePopulationInfected DESC
+	NewInfectionCount DESC;
 
 
 
+-- To get better insights, I decided to Answer this questions: 
+-- 1. How has the number of cases and deaths changed over time?
+-- 2. How does the rate of new infections or deaths vary by location?
+-- 3. Is there a relationship between population density and the spread of COVID?
+-- 4. Are there any trends in the demographic characteristics of people who have been infected or died from COVID?
+-- 5. What impact have public health interventions, such as lockdowns and vaccinations, had on the spread of COVID?
+
+-- So, Calculating growth rates to identify the rate of increase in cases and deaths.
+-- Table 6 Tableau
+SELECT 
+  date, 
+  total_cases, 
+  (total_cases - LAG(total_cases) OVER (ORDER BY date)) / LAG(total_cases) OVER (ORDER BY date) * 100 AS daily_growth_rate
+FROM 
+	PortfolioProject..CovidData
+WHERE
+	total_cases IS NOT NULL
+ORDER BY 
+	date;
+
+
+
+-- Using moving averages to smooth out fluctuations and identify trends.
+-- Table 7 Tableau
+SELECT 
+	date, 
+	total_cases,
+	AVG(total_cases) OVER (ORDER BY date ROWS BETWEEN 6 PRECEDING AND CURRENT ROW) AS '7_day_avg_total_cases'
+FROM
+	PortfolioProject..CovidData
+WHERE
+	total_cases IS NOT NULL
+ORDER BY 
+	date;
+
+
+-- Comparing data across different regions or countries using per capita rates, calculates the total cases and deaths per 100,000 people using the population data.
+-- Table 8 Tableau
+SELECT 
+  location, 
+  date, 
+  total_cases / population * 100000 AS cases_per_capita, 
+  total_deaths / population * 100000 AS deaths_per_capita
+FROM 
+	PortfolioProject..CovidData
+WHERE
+	total_cases IS NOT NULL
+ORDER BY 
+	location,
+	date;
+
+
+-- Using statistical techniques, such as correlation analysis
+-- Table 9 Tableau
+SELECT 
+	date,
+	total_cases, 
+	total_deaths
+FROM 
+	PortfolioProject..CovidData
+WHERE
+	total_cases IS NOT NULL AND total_deaths IS NOT NULL
+ORDER BY 
+	date;
 
 
