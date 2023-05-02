@@ -56,7 +56,7 @@ FROM
 	PortfolioProject.dbo.CovidDeath
 WHERE 
 	(location = 'Iran') AND 
-	total_cases = (SELECT MAX(total_cases) FROM PortfolioProject..CovidDeath WHERE location = 'Iran' ) AND
+	--total_cases = (SELECT MAX(total_cases) FROM PortfolioProject..CovidDeath WHERE location = 'Iran' ) AND
 	date = (SELECT MAX(date) FROM PortfolioProject..CovidDeath WHERE location = 'Iran' );
 
 
