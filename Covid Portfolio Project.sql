@@ -44,7 +44,7 @@ FROM
 WHERE 
 	location = 'Iran'
 ORDER BY 
-	1,2;
+	1,2 DESC;
 
 -- Shows the latest statistic ratio of dying by covid in Iran 
 SELECT location, 
