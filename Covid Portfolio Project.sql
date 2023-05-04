@@ -207,7 +207,7 @@ ORDER BY
 
 -- USE Previous Table to Get Insights about Vacination Rate in Different Countries.
 WITH 
-	PopvsVac (continent, location, date, population, new_vacination, RollingPeopleVaccinated)
+	PopvsVac (continent, location, date, population, new_vaccinations, RollingPeopleVaccinated)
 	AS
 	(
 	SELECT
@@ -234,10 +234,13 @@ WHERE
 	)
 SELECT 
 	*,
-	(new_vaccination / Population) * 100 AS DailyVaccinationRate,
-	(RollingPeopleVacinated / population * 100) AS RollingAverageVaccinationRate 
+	(COALESCE(new_vaccinations, 0) / Population) * 100 AS DailyVaccinationRate,
+	COALESCE((RollingPeopleVaccinated / population * 100), 0) AS RollingAverageVaccinationRate 
 FROM
-	PopvsVac;
+	PopvsVac
+ORDER BY 
+  location, 
+  date;
 
 
 
