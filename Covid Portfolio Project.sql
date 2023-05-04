@@ -124,7 +124,7 @@ WHERE
 GROUP BY 
 	location
 ORDER BY 
-	TotalDeathCount DESC;
+	DeathRatioPercentage DESC;
 
 
 
@@ -188,7 +188,7 @@ SELECT
 	dea.population,
 	vac.new_vaccinations,
 	SUM(CONVERT(bigint,vac.new_vaccinations)) OVER( PARTITION BY dea.location ORDER BY dea.location, dea.date) AS 
-		RollingPeopleVacinated
+		RollingPeopleVaccinated
 FROM
 	PortfolioProject.dbo.CovidDeath dea
 	JOIN
@@ -205,9 +205,9 @@ ORDER BY
 
 
 
--- USE CTE
+-- USE Previous Table to Get Insights about Vacination Rate in Different Countries.
 WITH 
-	PopvsVac (continent, location, date, population, new_vacination, RollingPeopleVacinated)
+	PopvsVac (continent, location, date, population, new_vacination, RollingPeopleVaccinated)
 	AS
 	(
 	SELECT
@@ -217,7 +217,7 @@ WITH
 	dea.population,
 	vac.new_vaccinations,
 	SUM(CONVERT(bigint,vac.new_vaccinations)) OVER( PARTITION BY dea.location ORDER BY dea.location, dea.date) AS 
-		RollingPeopleVacinated
+		RollingPeopleVaccinated
 FROM
 	PortfolioProject.dbo.CovidDeath dea
 	JOIN
@@ -234,7 +234,8 @@ WHERE
 	)
 SELECT 
 	*,
-	(RollingPeopleVacinated / population * 100) AS RPCRationPercentage
+	(new_vaccination / Population) * 100 AS DailyVaccinationRate,
+	(RollingPeopleVacinated / population * 100) AS RollingAverageVaccinationRate 
 FROM
 	PopvsVac;
 
@@ -269,8 +270,9 @@ WHERE
 	)
 SELECT 
 	location,
-	MAX(RollingPeopleVacinated),
-	MAX(RollingPeopleVacinated / population * 100) AS RPCRationPercentage
+	MAX((new_vaccinations / Population) * 100) AS MaxDailyVaccinationRate, 
+    MAX(RollingPeopleVacinated),
+	MAX(RollingPeopleVacinated / population * 100) AS MaxRollingAverageVaccinationRate
 
 FROM
 	PopvsVac
