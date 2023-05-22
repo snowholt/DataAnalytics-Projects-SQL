@@ -273,9 +273,9 @@ WHERE
 	)
 SELECT 
 	location,
-	MAX(RollingPeopleVaccinated),
-	MAX((new_vaccinations / Population) * 100) AS MaxDailyVaccinationRate, 
-    MAX(RollingPeopleVaccinated / population * 100) AS MaxRollingAverageVaccinationRate
+	MAX(COALESCE(RollingPeopleVaccinated, 0)) AS MaxRollingPeopleVaccinated,
+	MAX((COALESCE(new_vaccinations, 0) / Population) * 100) AS MaxDailyVaccinationRate, 
+    MAX(COALESCE(RollingPeopleVaccinated, 0) / population * 100) AS MaxRollingAverageVaccinationRate
 
 FROM
 	PopvsVac
